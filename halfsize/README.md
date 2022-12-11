@@ -94,31 +94,31 @@ The following images were first converted to TGA format but for purposes of disp
 
 
 <figure>
-<img src="/Media/4_4_blue.png" style="width:20%;">
+<img src="./Media/4_4_blue.png" style="width:20%;">
 <figcaption align = "left"><b>Fig.1 - 4x4, BGRA = (255, 0, 0, 255) </b></figcaption>
 </figure>
 
 <figure>
-<img src="/Media/4_4_alternative.png" style="width:20%;">
+<img src="./Media/4_4_alternative.png" style="width:20%;">
 <figcaption align = "left"><b>Fig.2 - 4x4,  (255, 127, 127, 255)</b></figcaption>
 </figure>
 
 <figure>
-<img src="/Media/24_24.png" style="width:20%;">
+<img src="./Media/24_24.png" style="width:20%;">
 <figcaption align = "left"><b>Fig.3 - 24x24, 2 colours</b></figcaption>
 </figure>
 
 <figure>
-<img src="/Media/24_24_alternative.png" style="width:20%;">
+<img src="./Media/24_24_alternative.png" style="width:20%;">
 <figcaption align = "left"><b>Fig.4 - 24x24, 2 colours, irregular pattern</b></figcaption>
 </figure>
 
 <figure>
-<img src="/Media/picture1.jpg" style="width:20%;">
+<img src="./Media/picture1.jpg" style="width:20%;">
 <figcaption align = "left"><b>Fig.5 - Full colour picture</b></figcaption>
 </figure>
 <figure>
-<img src="/Media/picture2.jpg" style="width:20%;">
+<img src="./Media/picture2.jpg" style="width:20%;">
 <figcaption align = "left"><b>Fig.6 - Full colour picture</b></figcaption>
 </figure>
 
@@ -138,6 +138,6 @@ Coincidently, the abstraction level of RGBA values and the array manipulation (s
 It was also very helpful to export some of the test vectors as tables where I could see both color value and indexing (see figure 7)
 
 <figure>
-<img src="/Media/pixel_table.jpg" style="width:80%;">
+<img src="./Media/pixel_table.jpg" style="width:80%;">
 <figcaption align = "left"><b>Fig.7 - Pixel table </b></figcaption>
 </figure>
