@@ -138,6 +138,6 @@ Coincidently, the abstraction level of RGBA values and the array manipulation (s
 It was also very helpful to export some of the test vectors as tables where I could see both color value and indexing (see figure 7)
 
 <figure>
-<img src="./Media/pixel_table.jpg" style="width:80%;">
+<img src="./Media/pixel_table.JPG" style="width:80%;">
 <figcaption align = "left"><b>Fig.7 - Pixel table </b></figcaption>
 </figure>
