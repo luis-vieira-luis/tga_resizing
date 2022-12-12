@@ -7,16 +7,14 @@
 
 #define ORIGINAL_IMAGE_NAME 1
 #define RESIZED_IMAGE_NAME  2
-//#define PIXELDEPTH_24BIT    24
-//#define PIXELDEPTH_32BIT    32
+
 
 enum pixelBitDepth {
     PIXELDEPTH_24BIT = 3,
     PIXELDEPTH_32BIT = 4
 };
 
-enum fileStatus
-{
+enum fileStatus {
     FILE_ERR_OPEN = -1,
     FILE_OK = 0,
     FILE_ERR_BAD_FORMAT = 1,
@@ -101,7 +99,7 @@ inline void deinterleave_rgba_channels(char* originalImagePixelData, short& widt
     channelOrder colorOrder)
 {
    // pixel area * BGR values
-   const size_t pixelArea = width * height;
+   const size_t pixelArea = (const size_t)(width) * (const size_t)(height);
    const size_t bitDepth = (pixelDepth / IMAGEBIT_SIZE);
    const size_t pixelAreaBitSize = (pixelArea * bitDepth);
 
@@ -150,20 +148,22 @@ inline void nn_interpolation(float scaleFactor, short& width, short& height, cha
     std::vector<char>& blueChnResized, std::vector<char>& greenChnResized, std::vector<char>& redChnResized, std::vector<char>& alphaChnResized) 
 {
     const size_t bitDepth = (pixelDepth / IMAGEBIT_SIZE);
-    const int newHeight = height / scaleFactor;
-    const int newWidth = width / scaleFactor;
+    //const int newHeight = height / scaleFactor;
+    const int newHeight = static_cast<const int>(static_cast<float>(height) / scaleFactor);
+    //const int newWidth = width / scaleFactor;
+    const int newWidth = static_cast<const int>(static_cast<float>(width) / scaleFactor);
     const int newArea = newHeight * newWidth;
 
 
-    float x_ratio = (float)width / (float)newWidth;
-    float y_ratio = (float)height / (float)newHeight;
+    float x_ratio = static_cast<float>(width )/ static_cast<float>(newWidth);
+    float y_ratio = static_cast<float>(height) / static_cast<float>(newHeight);
 
     for (int i = 0; i < newHeight; i++) {
         for (int j = 0; j < newWidth; j++) {
-            float px = floor((float)j * x_ratio);
-            float py = floor((float)i * y_ratio);
+            float px = floorf(static_cast<float>(j) * x_ratio);
+            float py = floorf(static_cast<float>(i) * y_ratio);
             int output_index = i * newWidth + j;
-            int input_index = (int)((py * (float)width) + px);
+            int input_index = static_cast<int>((py * static_cast<float>(width)) + px);
 
             blueChnResized[output_index]  = blueChn[input_index];
             greenChnResized[output_index] = greenChn[input_index];
@@ -198,12 +198,12 @@ inline void bilinear_interpolation(float scaleFactor, short& width, short& heigh
     std::vector<char>& blueChnResized, std::vector<char>& greenChnResized, std::vector<char>& redChnResized, std::vector<char>& alphaChnResized) 
 {
     const size_t bitDepth = (pixelDepth / IMAGEBIT_SIZE);
-    const int newHeight = height / scaleFactor;
-    const int newWidth = width / scaleFactor;
-    const int newArea = newHeight * newWidth;
+    const int newHeight = static_cast<const int>(static_cast<float>(height) / scaleFactor);
+    const int newWidth  = static_cast<const int>(static_cast<float>(width) / scaleFactor);
+    const int newArea   = newHeight * newWidth;
 
-    float x_ratio = (float)width / (float)newWidth;
-    float y_ratio = (float)height / (float)newHeight;
+    float x_ratio = static_cast<float>(width)  / static_cast<float>(newWidth);
+    float y_ratio = static_cast<float>(height) / static_cast<float>(newHeight);
 
     int offset = 0;
     // border pixels for the new interpolated pixel
@@ -211,49 +211,54 @@ inline void bilinear_interpolation(float scaleFactor, short& width, short& heigh
     int pixel;
     for (int i = 0; i < newHeight; i++) {
         for (int j = 0; j < newWidth; j++) {
-            int x = (int)(floor((float)j * x_ratio));
-            int y = (int)(floor((float)i * y_ratio));
-            float x_diff = ((float)j * x_ratio) - (float)(x);
-            float y_diff = ((float)i * y_ratio) - (float)(y);
-            int input_index = y * width + x;
-            int output_index = i * newWidth + j;
+            int x = static_cast<int>(floorf(static_cast<float>(j) * x_ratio));
+            int y = static_cast<int>(floorf(static_cast<float>(i) * y_ratio));
+            float x_diff = (static_cast<float>(j) * x_ratio) - static_cast<float>(x);
+            float y_diff = (static_cast<float>(i) * y_ratio) - static_cast<float>(y);
+            int output_index = i * static_cast<int>(newWidth) + j;
+
+            // calculating next idxs
+            int input_index_a = y * static_cast<int>(width) + x;
+            int input_index_b = input_index_a + 1;
+            int input_index_c = input_index_a + static_cast<int>(width);
+            int input_index_d = input_index_a + static_cast<int>(width) + 1;
 
             // blue channel
-            a = blueChn[input_index];
-            b = blueChn[input_index + 1];
-            c = blueChn[input_index + width];
-            d = blueChn[input_index + width + 1];
+            a = blueChn[input_index_a];
+            b = blueChn[input_index_b];
+            c = blueChn[input_index_c];
+            d = blueChn[input_index_d];
 
-            pixel = (int)(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
-            blueChnResized[output_index] = blueChn[input_index];
+            pixel = static_cast<int>(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
+            blueChnResized[output_index] = blueChn[input_index_a];
 
             // green channel
-            a = greenChn[input_index];
-            b = greenChn[input_index + 1];
-            c = greenChn[input_index + width];
-            d = greenChn[input_index + width + 1];
+            a = greenChn[input_index_a];
+            b = greenChn[input_index_b];
+            c = greenChn[input_index_c];
+            d = greenChn[input_index_d];
 
-            pixel = (int)(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
-            greenChnResized[output_index] = greenChn[input_index];
+            pixel = static_cast<int>(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
+            greenChnResized[output_index] = greenChn[input_index_a];
 
             // red channel
-            a = redChn[input_index];
-            b = redChn[input_index + 1];
-            c = redChn[input_index + width];
-            d = redChn[input_index + width + 1];
+            a = redChn[input_index_a];
+            b = redChn[input_index_b];
+            c = redChn[input_index_c];
+            d = redChn[input_index_d];
 
-            pixel = (int)(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
-            redChnResized[output_index] = redChn[input_index];
+            pixel = static_cast<int>(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
+            redChnResized[output_index] = redChn[input_index_a];
 
             if (bitDepth == PIXELDEPTH_32BIT) {
                 // red channel
-                a = alphaChn[input_index];
-                b = alphaChn[input_index + 1];
-                c = alphaChn[input_index + width];
-                d = alphaChn[input_index + width + 1];
+                a = alphaChn[input_index_a];
+                b = alphaChn[input_index_b];
+                c = alphaChn[input_index_c];
+                d = alphaChn[input_index_d];
 
-                pixel = (int)(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
-                alphaChnResized[output_index] = alphaChn[input_index];
+                pixel = static_cast<int>(a * (1 - x_diff) * 1 - y_diff + b * (x_diff) * (1 - y_diff) + c * (y_diff) * (1 - x_diff) + d * (x_diff * y_diff));
+                alphaChnResized[output_index] = alphaChn[input_index_a];
             }
         }
     }
