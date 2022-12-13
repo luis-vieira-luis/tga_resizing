@@ -2,9 +2,13 @@
 
 
 TGAProcessing::~TGAProcessing() {
-    // Free memory allocation from char* 
-    delete[] tga.data.originalImagePixelData;
-    delete[] tga.data.resizedImagePixelData;
+
+    if (imageStatus == FILE_OK) {
+
+        // Free memory allocation from char* 
+        delete[] tga.data.originalImagePixelData;
+        delete[] tga.data.resizedImagePixelData;
+    }
 
 }
 
@@ -17,7 +21,6 @@ fileStatus TGAProcessing::LoadImage(const std::string& inputFileName)
 
     if (imageFile.is_open()) {
         fileStatus result = ReadImage(imageFile, tga.header, tga.data);
-         
         if (FILE_OK == result) {
             imageFile.close();
             return result;
@@ -42,8 +45,7 @@ fileStatus TGAProcessing::SaveImage(const std::string& outputFileName)
         file.close();
         return FILE_OK;
     }
-    else
-    {
+    else {
         return FILE_ERR_OPEN;
     }
 }
@@ -154,6 +156,8 @@ void TGAProcessing::WriteImage(std::fstream& imageFile, t_tgaheader& tgaHeader, 
 
     // Write Pixel BGR data
     imageFile.write(tgaData.resizedImagePixelData, pixelAreaBitSize);    
+
+    imageStatus = FILE_OK;
 }
 
 

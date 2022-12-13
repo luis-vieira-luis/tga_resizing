@@ -82,6 +82,7 @@ public:
 
 private:
     t_tga           tga;
+    fileStatus      imageStatus;
 
     fileStatus ReadImage(std::fstream& imageFile, t_tgaheader& tgaHeader, t_tgadata& tgaData);
     void WriteImage(std::fstream& imageFile, t_tgaheader& tgaHeader, t_tgadata& tgaData);
