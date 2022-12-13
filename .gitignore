@@ -348,3 +348,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+halfsize/Build/x64/Release/halfsize.exe
+halfsize/x64/Debug/halfsize.exe.recipe
+halfsize/x64/Debug/Project1.vcxproj.FileListAbsolute.txt
