@@ -41,8 +41,8 @@ Each channel stores 8 bytes
 */
 typedef struct
 {
-    char* originalImagePixelData;
-    char* resizedImagePixelData;   
+    std::unique_ptr<char[]> originalData;
+    std::unique_ptr<char[]> resizedData;
 
     // De-interleaved RBG data
     std::vector<char> redChn;
@@ -68,8 +68,6 @@ typedef struct {
 class TGAProcessing
 {
 public:
-
-    ~TGAProcessing();
 
     fileStatus LoadImage(const std::string& inputFileName);
     fileStatus SaveImage(const std::string& outputFileName);
