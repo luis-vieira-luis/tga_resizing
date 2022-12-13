@@ -1,18 +1,6 @@
 #include "TGAProcessing.h"
 
 
-TGAProcessing::~TGAProcessing() {
-
-    if (imageStatus == FILE_OK) {
-
-        // Free memory allocation from char* 
-        delete[] tga.data.originalImagePixelData;
-        delete[] tga.data.resizedImagePixelData;
-    }
-
-}
-
-
 fileStatus TGAProcessing::LoadImage(const std::string& inputFileName)
 {
     std::fstream imageFile;
@@ -81,12 +69,12 @@ fileStatus TGAProcessing::ReadImage(std::fstream& imageFile, t_tgaheader& tgaHea
     const size_t bitDepth = (tgaHeader.pixelDepth / IMAGEBIT_SIZE);
     // pixel area * BGR values
     const size_t pixelAreaBitSize = (pixelArea * bitDepth);
-    tgaData.originalImagePixelData = new char[pixelAreaBitSize];
-    
+    tgaData.originalData = std::make_unique<char[]>(pixelAreaBitSize);
+
     // Read BGR Data
-    imageFile.read(tgaData.originalImagePixelData, pixelAreaBitSize);
-    
-    
+    imageFile.read(tgaData.originalData.get(), pixelAreaBitSize);
+
+
     return FILE_OK;
 }
 
@@ -102,12 +90,13 @@ void TGAProcessing::ResizeImage(float scaleFactor, resizeMethod interpolationMet
     tga.data.greenChnResized.assign(newArea, sizeof(char));
     tga.data.redChnResized.assign(newArea, sizeof(char));
     tga.data.alphaChnResized.assign(newArea, sizeof(char));
-    tga.data.resizedImagePixelData = new char[newArea * bitDepth];
+    tga.data.resizedData = std::make_unique<char[]>(newArea * bitDepth);
 
     // ======================================================
     // De-interleave input stream to different colour channels
-    deinterleave_rgba_channels(tga.data.originalImagePixelData, tga.header.width, tga.header.height, tga.header.pixelDepth,
+    deinterleave_rgba_channels(tga.data.originalData.get(), tga.header.width, tga.header.height, tga.header.pixelDepth,
         tga.data.blueChn, tga.data.greenChn, tga.data.redChn, tga.data.alphaChn, BGRA);
+
 
     // ======================================================
     // Interpolation of original pixel data to new image size
@@ -126,7 +115,7 @@ void TGAProcessing::ResizeImage(float scaleFactor, resizeMethod interpolationMet
 
     // ======================================================
     // Interleave different colour channels to output stream [1, (width*height) pixels]
-    interleave_rgba_channels(tga.data.resizedImagePixelData, tga.header.width, tga.header.height, tga.header.pixelDepth,
+    interleave_rgba_channels(tga.data.resizedData.get(), tga.header.width, tga.header.height, tga.header.pixelDepth,
         tga.data.blueChnResized, tga.data.greenChnResized, tga.data.redChnResized, tga.data.alphaChnResized,
                             scaleFactor, BGRA);
 }
@@ -155,9 +144,7 @@ void TGAProcessing::WriteImage(std::fstream& imageFile, t_tgaheader& tgaHeader, 
     imageFile.write(&tgaHeader.imageDescriptor, sizeof(tgaHeader.pixelDepth));
 
     // Write Pixel BGR data
-    imageFile.write(tgaData.resizedImagePixelData, pixelAreaBitSize);    
-
-    imageStatus = FILE_OK;
+    imageFile.write(tgaData.resizedData.get(), pixelAreaBitSize);
 }
 
 
