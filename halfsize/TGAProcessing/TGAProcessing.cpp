@@ -91,9 +91,7 @@ fileStatus TGAProcessing::ReadImage(std::fstream& imageFile, t_tgaheader& tgaHea
 void TGAProcessing::ResizeImage(float scaleFactor, resizeMethod interpolationMethod)
 {
     const size_t bitDepth = (tga.header.pixelDepth / IMAGEBIT_SIZE);
-    //const int newHeight   = tga.header.height / scaleFactor;
     const int newHeight   = static_cast<const int>(static_cast<float>(tga.header.height) / scaleFactor);
-    //const int newWidth    = tga.header.width / scaleFactor;
     const int newWidth    = static_cast<const int>(static_cast<float>(tga.header.width) / scaleFactor);
     const int newArea     = newHeight * newWidth;
 
